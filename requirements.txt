@@ -10,3 +10,4 @@ gdown
 tqdm
 python-dotenv
 faiss-cpu
+insightface
