@@ -11,3 +11,5 @@ tqdm
 python-dotenv
 faiss-cpu
 insightface
+opencv-python-headless
+uvicorn[standard]
