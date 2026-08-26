@@ -42,7 +42,7 @@ with col1:
 
     if uploaded_file is not None:
         image = Image.open(uploaded_file)
-        st.image(image, caption="Uploaded image", use_column_width=True)
+        st.image(image, caption="Uploaded image", use_container_width=True)
 
 with col2:
     st.subheader("How it works")
