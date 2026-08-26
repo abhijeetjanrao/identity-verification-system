@@ -1,3 +1,11 @@
-streamlit
+fastapi
+uvicorn[standard]
+python-multipart
 requests
+numpy
+pandas
+opencv-python-headless
 Pillow
+gdown
+tqdm
+python-dotenv
