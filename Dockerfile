@@ -6,6 +6,8 @@ RUN apt-get update && apt-get install -y \
     libxcb1 \
     libglib2.0-0 \
     libgl1 \
+    wget \
+    unzip \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt ./
@@ -13,8 +15,8 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . ./
 
-# Remove any accidentally cached/corrupt InsightFace models
-RUN rm -rf /root/.insightface
+# Use a clean InsightFace cache
+ENV INSIGHTFACE_HOME=/root/.insightface
 
 EXPOSE 8000
 
