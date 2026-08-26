@@ -9,3 +9,4 @@ Pillow
 gdown
 tqdm
 python-dotenv
+faiss-cpu
