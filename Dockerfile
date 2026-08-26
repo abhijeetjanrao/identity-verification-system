@@ -2,10 +2,11 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-# Install system libraries required by OpenCV / InsightFace
+# System libraries required by OpenCV / InsightFace
 RUN apt-get update && apt-get install -y \
     libxcb1 \
     libglib2.0-0 \
+    libgl1 \
     && rm -rf /var/lib/apt/lists/*
 
 COPY requirements.txt ./
