@@ -2,25 +2,27 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-# System libraries required by OpenCV / InsightFace
 RUN apt-get update && apt-get install -y \
-    libxcb1 \
-    libglib2.0-0 \
     libgl1 \
+    libglib2.0-0 \
     wget \
     unzip \
     && rm -rf /var/lib/apt/lists/*
 
-# Python dependencies
-COPY requirements.txt ./
+COPY requirements.txt .
+
 RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy project
-COPY . ./
+COPY . .
 
-# Create InsightFace model directory
-RUN mkdir -p /root/.insightface/models
+# Download InsightFace model during BUILD
+RUN mkdir -p /root/.insightface/models && \
+    wget -q --show-progress \
+    https://github.com/deepinsight/insightface/releases/download/v0.7/buffalo_l.zip \
+    -O /tmp/buffalo_l.zip && \
+    unzip -q /tmp/buffalo_l.zip -d /root/.insightface/models/ && \
+    rm /tmp/buffalo_l.zip
 
 EXPOSE 8000
 
-CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
