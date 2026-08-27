@@ -17,16 +17,13 @@ COPY . .
 
 ENV INSIGHTFACE_HOME=/root/.insightface
 
-# Download and extract InsightFace model
 RUN mkdir -p /root/.insightface/models && \
     wget -q \
     https://github.com/deepinsight/insightface/releases/download/v0.7/buffalo_l.zip \
     -O /tmp/buffalo_l.zip && \
-    unzip -q /tmp/buffalo_l.zip -d /root/.insightface/models && \
+    unzip -q /tmp/buffalo_l.zip \
+    -d /root/.insightface/models && \
     rm /tmp/buffalo_l.zip
-
-# Show what was actually extracted
-RUN find /root/.insightface/models -maxdepth 3 -type f -name "*.onnx" -print
 
 EXPOSE 8000
 
