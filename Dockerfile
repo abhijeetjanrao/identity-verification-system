@@ -15,10 +15,9 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-# InsightFace model location
 ENV INSIGHTFACE_HOME=/root/.insightface
 
-# Download buffalo_l during Docker build
+# Download and extract InsightFace model
 RUN mkdir -p /root/.insightface/models && \
     wget -q \
     https://github.com/deepinsight/insightface/releases/download/v0.7/buffalo_l.zip \
@@ -26,8 +25,8 @@ RUN mkdir -p /root/.insightface/models && \
     unzip -q /tmp/buffalo_l.zip -d /root/.insightface/models && \
     rm /tmp/buffalo_l.zip
 
-# Verify model files exist
-RUN ls -lh /root/.insightface/models/buffalo_l
+# Show what was actually extracted
+RUN find /root/.insightface/models -maxdepth 3 -type f -name "*.onnx" -print
 
 EXPOSE 8000
 
