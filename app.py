@@ -7,7 +7,6 @@ from uuid import uuid4
 from fastapi import FastAPI, File, UploadFile
 from fastapi.responses import JSONResponse
 
-
 app = FastAPI(title="Identity Verification API")
 
 predictor = None
@@ -22,12 +21,6 @@ def get_predictor():
         predictor = PredictionPipeline()
 
     return predictor
-
-
-# Load the AI model when the server starts
-@app.on_event("startup")
-def startup_event():
-    get_predictor()
 
 
 @app.get("/")
@@ -58,6 +51,8 @@ def home():
         )
 
 
+# Simple health check
+# Does NOT load the AI model
 @app.get("/health")
 def health():
     return {
@@ -79,9 +74,7 @@ async def predict_face(file: UploadFile = File(...)):
     if file.filename is None:
         return JSONResponse(
             status_code=400,
-            content={
-                "error": "A file is required"
-            },
+            content={"error": "A file is required"},
         )
 
     _, ext = os.path.splitext(file.filename.lower())
@@ -89,9 +82,7 @@ async def predict_face(file: UploadFile = File(...)):
     if ext not in {".jpg", ".jpeg", ".png", ".webp"}:
         return JSONResponse(
             status_code=400,
-            content={
-                "error": "Unsupported image format"
-            },
+            content={"error": "Unsupported image format"},
         )
 
     temp_path = None
