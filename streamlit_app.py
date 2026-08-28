@@ -35,7 +35,7 @@ st.markdown(
         background: linear-gradient(90deg, #4f46e5, #2563eb);
         color: white;
         border: none;
-        box-shadow: 0 6px 18px rgba(37,99,235,0.25);
+        box-shadow: 0 6px 18px rgba(37, 99, 235, 0.25);
     }
 
     .stButton > button:hover {
@@ -48,11 +48,7 @@ st.markdown(
         border: 1px solid #334155;
         border-radius: 12px;
         padding: 0.9rem;
-        box-shadow: 0 8px 24px rgba(0,0,0,0.15);
-    }
-
-    .st-emotion-cache-1kyxq5g {
-        border-radius: 14px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
     }
 
     .stAlert {
@@ -65,7 +61,7 @@ st.markdown(
 
 
 # ============================================================
-# BACKEND API
+# RAILWAY BACKEND
 # ============================================================
 
 API_URL = os.getenv(
@@ -91,17 +87,21 @@ st.markdown(
         border-radius: 16px;
         margin-bottom: 1rem;
     ">
-        <h1 style="color: white; margin-bottom: 0.3rem;">
+        <h1 style="
+            color: white;
+            margin: 0;
+            font-size: 2rem;
+        ">
             Identity Verification Demo
         </h1>
-
-        <p style="color: #cbd5e1; margin: 0;">
-            AI-powered identity verification for attendance,
-            access control, and recognition workflows.
-        </p>
     </div>
     """,
     unsafe_allow_html=True,
+)
+
+st.write(
+    "AI-powered identity verification for attendance, "
+    "access control, and recognition workflows."
 )
 
 st.write(
@@ -111,11 +111,15 @@ st.write(
 
 
 # ============================================================
-# IMAGE UPLOAD SECTION
+# MAIN COLUMNS
 # ============================================================
 
 col1, col2 = st.columns([1.2, 0.8])
 
+
+# ============================================================
+# LEFT COLUMN — IMAGE UPLOAD
+# ============================================================
 
 with col1:
 
@@ -127,6 +131,7 @@ with col1:
     if uploaded_file is not None:
 
         try:
+
             image = Image.open(uploaded_file)
 
             st.image(
@@ -137,12 +142,15 @@ with col1:
 
         except Exception as exc:
 
-            st.error(f"Could not open the image: {exc}")
+            st.error(
+                f"Could not open the image: {exc}"
+            )
+
             uploaded_file = None
 
 
 # ============================================================
-# HOW IT WORKS
+# RIGHT COLUMN — HOW IT WORKS
 # ============================================================
 
 with col2:
@@ -150,31 +158,24 @@ with col2:
     st.subheader("How it works")
 
     st.markdown(
-        "- Detects a face in the uploaded image"
-    )
-
-    st.markdown(
-        "- Extracts feature embeddings"
-    )
-
-    st.markdown(
-        "- Matches the result against the trained identity database"
-    )
-
-    st.markdown(
-        "- Returns a confidence-based verification result"
+        """
+        - Detects a face in the uploaded image
+        - Extracts feature embeddings
+        - Matches the result against the trained identity database
+        - Returns a confidence-based verification result
+        """
     )
 
     st.markdown("---")
 
     st.info(
         "Use case: attendance verification, "
-        "access control demo, or identity recognition"
+        "access control demo, or identity recognition."
     )
 
 
 # ============================================================
-# VERIFY BUTTON
+# VERIFY IDENTITY
 # ============================================================
 
 if uploaded_file is not None:
@@ -187,7 +188,7 @@ if uploaded_file is not None:
         with st.spinner("Analyzing image..."):
 
             # ------------------------------------------------
-            # Determine content type
+            # Get MIME type
             # ------------------------------------------------
 
             content_type, _ = mimetypes.guess_type(
@@ -195,11 +196,12 @@ if uploaded_file is not None:
             )
 
             if not content_type:
+
                 content_type = "application/octet-stream"
 
 
             # ------------------------------------------------
-            # Prepare multipart file
+            # Prepare multipart request
             # ------------------------------------------------
 
             files = {
@@ -214,7 +216,7 @@ if uploaded_file is not None:
             try:
 
                 # ====================================================
-                # CALL RAILWAY FASTAPI BACKEND
+                # CALL RAILWAY FASTAPI
                 # ====================================================
 
                 response = requests.post(
@@ -224,34 +226,23 @@ if uploaded_file is not None:
                 )
 
 
-                # ------------------------------------------------
-                # Check HTTP response
-                # ------------------------------------------------
+                # ====================================================
+                # CHECK RESPONSE
+                # ====================================================
 
                 response.raise_for_status()
 
 
-                # ------------------------------------------------
-                # Convert JSON response
-                # ------------------------------------------------
+                # ====================================================
+                # PARSE JSON
+                # ====================================================
 
                 result = response.json()
 
 
                 # ====================================================
-                # SUCCESS
+                # RESULT VALUES
                 # ====================================================
-
-                st.success(
-                    "Verification completed successfully!"
-                )
-
-                st.subheader("Prediction Result")
-
-
-                # ------------------------------------------------
-                # Get result values
-                # ------------------------------------------------
 
                 status = result.get(
                     "status",
@@ -280,7 +271,20 @@ if uploaded_file is not None:
 
 
                 # ====================================================
-                # MATCHED
+                # SUCCESS MESSAGE
+                # ====================================================
+
+                st.success(
+                    "Verification completed successfully!"
+                )
+
+                st.subheader(
+                    "Prediction Result"
+                )
+
+
+                # ====================================================
+                # MATCH STATUS
                 # ====================================================
 
                 if status == "matched":
@@ -322,14 +326,25 @@ if uploaded_file is not None:
 
                 with metric2:
 
+                    try:
+
+                        confidence_value = float(
+                            confidence
+                        )
+
+                    except (TypeError, ValueError):
+
+                        confidence_value = 0.0
+
+
                     st.metric(
                         "Confidence",
-                        f"{float(confidence):.3f}",
+                        f"{confidence_value:.3f}",
                     )
 
 
                 # ====================================================
-                # ADDITIONAL INFORMATION
+                # PROFESSION
                 # ====================================================
 
                 if profession:
@@ -339,6 +354,10 @@ if uploaded_file is not None:
                     )
 
 
+                # ====================================================
+                # DESCRIPTION
+                # ====================================================
+
                 if description:
 
                     st.write(
@@ -347,10 +366,12 @@ if uploaded_file is not None:
 
 
                 # ====================================================
-                # DETAILED JSON RESPONSE
+                # DETAILED JSON
                 # ====================================================
 
-                st.markdown("#### Detailed Response")
+                st.markdown(
+                    "#### Detailed Response"
+                )
 
                 st.json(result)
 
@@ -389,48 +410,74 @@ if uploaded_file is not None:
 
 
             # ====================================================
-            # REQUEST ERROR
+            # TIMEOUT ERROR
             # ====================================================
 
             except requests.exceptions.Timeout:
 
                 st.error(
                     "The API request timed out. "
-                    "The AI model may still be processing the image. "
-                    "Please try again."
+                    "The AI model may still be processing "
+                    "the image. Please try again."
                 )
 
+
+            # ====================================================
+            # CONNECTION ERROR
+            # ====================================================
 
             except requests.exceptions.ConnectionError as exc:
 
                 st.error(
-                    f"Could not connect to the backend API.\n\n"
-                    f"API URL: {API_URL}\n\n"
-                    f"Error: {exc}"
+                    "Could not connect to the backend API."
                 )
 
+                st.code(
+                    f"API URL: {API_URL}\n\nError: {exc}"
+                )
+
+
+            # ====================================================
+            # HTTP ERROR
+            # ====================================================
 
             except requests.exceptions.HTTPError as exc:
 
                 st.error(
-                    f"The backend returned an HTTP error.\n\n"
+                    "The backend returned an HTTP error."
+                )
+
+                st.code(
                     f"Status code: {response.status_code}\n\n"
                     f"Response: {response.text}"
                 )
 
 
-            except requests.exceptions.RequestException as exc:
-
-                st.error(
-                    f"Could not reach the API.\n\n"
-                    f"API URL: {API_URL}\n\n"
-                    f"Error: {exc}"
-                )
-
+            # ====================================================
+            # JSON ERROR
+            # ====================================================
 
             except ValueError as exc:
 
                 st.error(
-                    f"The backend returned an invalid JSON response.\n\n"
-                    f"Error: {exc}"
+                    "The backend returned an invalid JSON response."
+                )
+
+                st.code(
+                    str(exc)
+                )
+
+
+            # ====================================================
+            # OTHER REQUEST ERROR
+            # ====================================================
+
+            except requests.exceptions.RequestException as exc:
+
+                st.error(
+                    "Could not reach the backend API."
+                )
+
+                st.code(
+                    f"API URL: {API_URL}\n\nError: {exc}"
                 )
