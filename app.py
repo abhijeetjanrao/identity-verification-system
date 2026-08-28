@@ -136,4 +136,3 @@ async def predict_face(file: UploadFile = File(...)):
         # -------------------------------------------------
         if temp_path and os.path.exists(temp_path):
             os.remove(temp_path)
-```
