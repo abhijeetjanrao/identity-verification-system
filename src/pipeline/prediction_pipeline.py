@@ -1,4 +1,3 @@
-```python
 import os
 from pathlib import Path
 
@@ -230,4 +229,3 @@ class PredictionPipeline:
             "confidence": similarity,
             "status": "matched"
         }
-```
