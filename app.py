@@ -1,3 +1,4 @@
+```python
 import os
 import shutil
 import tempfile
@@ -23,36 +24,22 @@ def get_predictor():
     return predictor
 
 
+# ---------------------------------------------------------
+# Root endpoint
+# Lightweight endpoint - DOES NOT load the AI model
+# ---------------------------------------------------------
 @app.get("/")
 def home():
-    try:
-        model = get_predictor()
-
-        return {
-            "status": "API Running Successfully",
-            "service": "Identity Verification System",
-            "model_ready": model.ready,
-            "message": (
-                "Model ready"
-                if model.ready
-                else (model.error or "Model not ready")
-            ),
-        }
-
-    except Exception as exc:
-        return JSONResponse(
-            status_code=503,
-            content={
-                "status": "API Running",
-                "service": "Identity Verification System",
-                "model_ready": False,
-                "error": str(exc),
-            },
-        )
+    return {
+        "status": "API Running Successfully",
+        "service": "Identity Verification System",
+    }
 
 
-# Simple health check
-# Does NOT load the AI model
+# ---------------------------------------------------------
+# Health check
+# Lightweight endpoint - DOES NOT load the AI model
+# ---------------------------------------------------------
 @app.get("/health")
 def health():
     return {
@@ -61,6 +48,9 @@ def health():
     }
 
 
+# ---------------------------------------------------------
+# History
+# ---------------------------------------------------------
 @app.get("/history")
 def get_history():
     return {
@@ -68,6 +58,9 @@ def get_history():
     }
 
 
+# ---------------------------------------------------------
+# Prediction
+# ---------------------------------------------------------
 @app.post("/predict")
 async def predict_face(file: UploadFile = File(...)):
 
@@ -88,6 +81,9 @@ async def predict_face(file: UploadFile = File(...)):
     temp_path = None
 
     try:
+        # -------------------------------------------------
+        # Create temporary image file
+        # -------------------------------------------------
         temp_path = os.path.join(
             tempfile.gettempdir(),
             f"{uuid4().hex}{ext}",
@@ -96,6 +92,9 @@ async def predict_face(file: UploadFile = File(...)):
         with open(temp_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
 
+        # -------------------------------------------------
+        # Load prediction model
+        # -------------------------------------------------
         model = get_predictor()
 
         if not model.ready:
@@ -107,8 +106,14 @@ async def predict_face(file: UploadFile = File(...)):
                 },
             )
 
+        # -------------------------------------------------
+        # Run prediction
+        # -------------------------------------------------
         result = model.predict(temp_path)
 
+        # -------------------------------------------------
+        # Save history
+        # -------------------------------------------------
         history_records.append(
             {
                 "timestamp": datetime.utcnow().isoformat(),
@@ -127,5 +132,9 @@ async def predict_face(file: UploadFile = File(...)):
         )
 
     finally:
+        # -------------------------------------------------
+        # Remove temporary image
+        # -------------------------------------------------
         if temp_path and os.path.exists(temp_path):
             os.remove(temp_path)
+```
